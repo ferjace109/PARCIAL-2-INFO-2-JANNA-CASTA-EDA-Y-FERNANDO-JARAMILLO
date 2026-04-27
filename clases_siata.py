@@ -96,3 +96,38 @@ class SiataCSV:
         self.df.set_index("fecha_hora", inplace=True)
         print(f"  ✔  Archivo '{self.nombre}' cargado correctamente. "
               f"({len(self.df)} registros, {len(self.df.columns)} columnas)")
+        
+ #  Información básica 
+
+    def mostrar_info(self):
+        # Muestra info() y describe() del DataFrame
+        print("\n" + "="*60)
+        print(f"  INFO – {self.nombre}")
+        print("="*60)
+        self.df.info()
+        print("\n" + "-"*60)
+        print("  ESTADÍSTICAS DESCRIPTIVAS:")
+        print("-"*60)
+        print(self.df.describe().to_string())
+        print("="*60 + "\n")
+
+    def listar_columnas(self):
+        print("\n  Columnas disponibles:")
+        for i, col in enumerate(self.df.columns, 1):
+            unidad = self.COLUMNAS_CALIDAD.get(col, "")
+            print(f"    {i}. {col}  {unidad}")
+
+    def _elegir_columna(self, mensaje: str = "  Nombre de la columna: ") -> str: #Solicita al usuario elegir una columna válida.
+        self.listar_columnas()
+        cols = list(self.df.columns)
+        while True:
+            col = input(mensaje).strip()
+            if col in cols:
+                return col
+            try:
+                idx = int(col) - 1
+                if 0 <= idx < len(cols):
+                    return cols[idx]
+            except ValueError:
+                pass
+            print("  ⚠  Columna inválida, intente de nuevo.")
