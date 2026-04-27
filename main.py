@@ -160,3 +160,58 @@ def submenu_repositorio(): #Submenú de gestión del repositorio de objetos
         elif opcion == 0:
             break
 
+#_______MENU PRINCIPAL_____
+def menu_principal():
+    while True:
+        limpiar()
+        encabezado("SISTEMA DE EXPLORACIÓN NEUROAMBIENTAL")
+        print("  Universidad de Antioquia – Bioingeniería – Informática II 2026-1")
+        print()
+        print("  ── Archivos CSV (SIATA – Calidad del Aire) ──────────────")
+        print("  1. Cargar archivo CSV y explorar")
+        print()
+        print("  ── Archivos MAT (EEG – Electroencefalografía) ───────────")
+        print("  2. Cargar archivo MAT (Control o Parkinson) y explorar")
+        print()
+        print("  ── Repositorio de objetos ───────────────────────────────")
+        print("  3. Gestionar repositorio (listar / buscar / abrir)")
+        print()
+        print("  0. Salir")
+
+        opcion = validar_entero("\n  Seleccione una opción: ", 0, 3)
+
+        if opcion == 1:
+            encabezado("CARGAR ARCHIVO CSV – SIATA")
+            ruta = pedir_ruta([".csv"])
+            try:
+                obj_csv = SiataCSV(ruta, carpeta_graficos=CARPETA_GRAFICOS)
+                repositorio.agregar(obj_csv)
+                pausa()
+                submenu_csv(obj_csv)
+            except Exception as e:
+                print(f"\n  ❌  Error al cargar el archivo: {e}")
+                pausa()
+
+        elif opcion == 2:
+            encabezado("CARGAR ARCHIVO MAT – EEG")
+            ruta = pedir_ruta([".mat"])
+            try:
+                obj_eeg = ArchivoEEG(ruta, carpeta_graficos=CARPETA_GRAFICOS)
+                repositorio.agregar(obj_eeg)
+                pausa()
+                submenu_eeg(obj_eeg)
+            except Exception as e:
+                print(f"\n  ❌  Error al cargar el archivo: {e}")
+                pausa()
+
+        elif opcion == 3:
+            submenu_repositorio()
+
+        # ── Salir ────────────────────────────────────────────────────────────
+        elif opcion == 0:
+            print("\n  Hasta luego. ¡Buena suerte!\n")
+            sys.exit(0)
+
+
+if __name__ == "__main__":
+    menu_principal()
