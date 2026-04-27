@@ -212,3 +212,17 @@ class ArchivoEEG:
         plt.tight_layout()
         plt.show()
         self._guardar_figura(fig, f"{self.nombre}_estadisticas_eje{eje}")
+
+    def _guardar_figura(self, fig: plt.Figure, nombre_base: str):
+    #Guarda la figura como PNG en la carpeta de gráficos
+        ruta_salida = os.path.join(self.carpeta_g, f"{nombre_base}.png")
+        fig.savefig(ruta_salida, dpi=150, bbox_inches="tight")
+        print(f"  💾  Gráfico guardado → {ruta_salida}")
+
+    def __str__(self):
+        return (f"ArchivoEEG | {self.nombre} | Tipo: {self.tipo} | "
+                f"Canales: {self.n_canales} | "
+                f"Muestras/época: {self.n_muestras} | Épocas: {self.n_epocas}")
+
+    def __repr__(self):
+        return f"ArchivoEEG('{self.ruta}')"
