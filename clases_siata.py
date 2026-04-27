@@ -168,3 +168,45 @@ class SiataCSV:
         plt.tight_layout()
         plt.show()
         self._guardar_figura(fig, f"{self.nombre}_{columna}_3graficos")
+
+# Previsualización de Series/DataFrames 
+
+    def _previsualizar(self, datos: pd.Series, titulo: str):
+        
+        #Muestra una porción del resultado de una operación.
+        #El usuario elige el modo:
+          #1. head(n)    –> primeras n filas
+          #2. tail(n)    –> últimas n filas
+          #3. sample(n)  –> n filas aleatorias
+          #4. rango      –> desde la fila i hasta la fila j
+        
+        total = len(datos)
+        print(f"\n  {'─'*56}")
+        print(f"  Resultado: {titulo}  ({total} filas en total)")
+        print(f"  {'─'*56}")
+        print("  ¿Cómo desea ver los datos?")
+        print("    1. head   – primeras N filas")
+        print("    2. tail   – últimas N filas")
+        print("    3. sample – N filas aleatorias")
+        print("    4. rango  – desde la fila i hasta la fila j")
+
+        modo = validar_entero("  Modo (1-4): ", 1, 4)
+
+        if modo in (1, 2, 3):
+            n = validar_entero(f"  ¿Cuántas filas desea ver? (1-{min(total, 100)}): ",
+                               1, min(total, 100))
+            if modo == 1:
+                fragmento = datos.head(n)
+            elif modo == 2:
+                fragmento = datos.tail(n)
+            else:
+                fragmento = datos.sample(n)
+        else:  # rango
+            print(f"  El índice numérico va de 0 a {total - 1}.")
+            desde = validar_entero(f"  Desde la fila (0-{total - 2}): ", 0, total - 2)
+            hasta = validar_entero(f"  Hasta la fila ({desde + 1}-{total - 1}): ",
+                                   desde + 1, total - 1)
+            fragmento = datos.iloc[desde:hasta + 1]
+
+        print(f"\n{fragmento.to_string()}")
+        print(f"  {'─'*56}\n")
