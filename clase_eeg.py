@@ -226,3 +226,48 @@ class ArchivoEEG:
 
     def __repr__(self):
         return f"ArchivoEEG('{self.ruta}')"
+    
+#CLASE REPOSITORIO
+#Almacena objetos SiataCSV y ArchivoEEG con búsqueda por nombre o tipo.
+#Internamente mantiene un diccionario:
+        #_datos = { nombre_clave: objeto }
+#La clave es el nombre del archivo sin extensión.
+
+class Repositorio:
+    def __init__(self):
+        self._datos: dict = {}
+        print("  📦  Repositorio de objetos iniciado.")
+
+    # ── Agregar ──────────────────────────────────────────────────────────────
+
+    def agregar(self, objeto):
+    #Almacena un SiataCSV o ArchivoEEG en el repositorio
+        if not isinstance(objeto, (SiataCSV, ArchivoEEG)): #SiataCSV este se hace en la otra branch
+            raise TypeError("Solo se pueden almacenar objetos SiataCSV o ArchivoEEG.")
+        clave = objeto.nombre
+        if clave in self._datos:
+            print(f"  ⚠  Ya existe un objeto con la clave '{clave}'. Será sobreescrito.")
+        self._datos[clave] = objeto
+        tipo = type(objeto).__name__
+        print(f"  ✔  Objeto '{clave}' ({tipo}) agregado al repositorio.")
+
+    # Buscar por nombre 
+    def buscar(self, nombre: str):
+    #Busca un objeto por nombre exacto (sin extensión)
+        if nombre in self._datos:
+            obj = self._datos[nombre]
+            print(f"  🔍  Encontrado: {obj}")
+            return obj
+        
+        # Búsqueda parcial (las mayúsculas no afectan)
+        coincidencias = {k: v for k, v in self._datos.items()
+                         if nombre.lower() in k.lower()}
+        if coincidencias:
+            print(f"  🔍  Coincidencias parciales para '{nombre}':")
+            for k, v in coincidencias.items():
+                print(f"    – {k}: {v}")
+            if len(coincidencias) == 1:
+                return list(coincidencias.values())[0]
+            return coincidencias
+        print(f"  ⚠  No se encontró ningún objeto con nombre '{nombre}'.")
+        return None
