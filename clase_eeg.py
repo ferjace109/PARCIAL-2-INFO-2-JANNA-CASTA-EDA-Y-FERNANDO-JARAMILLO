@@ -157,3 +157,58 @@ class ArchivoEEG:
         plt.tight_layout()
         plt.show()
         self._guardar_figura(fig, f"{self.nombre}_suma_canales")
+
+    # ── Promedio y desviación estándar
+    def estadisticas_3d(self):
+    #Calcula promedio y desviación estándar de la matriz 3D a lo largo de un eje elegido por el usuario
+    # Muestra dos subplots con stem de cada estadística
+    
+        print("\n─── Estadísticas sobre matriz 3D ──────────────────────────")
+        print("  Ejes disponibles:")
+        print("    0 → a lo largo de los canales      (resultado: muestras × épocas)")
+        print("    1 → a lo largo de las muestras     (resultado: canales × épocas)")
+        print("    2 → a lo largo de las épocas       (resultado: canales × muestras)")
+        eje = validar_entero("  Eje para calcular estadísticas (0, 1 ó 2): ", 0, 2)
+
+        promedio = np.mean(self.mat_3d, axis=eje)
+        desv_std = np.std(self.mat_3d, axis=eje)
+
+        # Aplanar para stem (visualización 1D)
+        prom_flat = promedio.flatten()
+        std_flat  = desv_std.flatten()
+        x_prom    = np.arange(len(prom_flat))
+        x_std     = np.arange(len(std_flat))
+
+        etiqueta_eje = ["canales", "muestras", "épocas"][eje]
+
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 8))
+        fig.suptitle(f"Estadísticas 3D (eje={eje}: {etiqueta_eje}) – {self.nombre}",
+                     fontsize=13, fontweight="bold")
+
+        # Stem promedio
+        markerline, stemlines, baseline = ax1.stem(
+            x_prom[:500], prom_flat[:500],
+            linefmt="steelblue", markerfmt="C0o", basefmt="k-"
+        )
+        plt.setp(stemlines, linewidth=0.5)
+        plt.setp(markerline, markersize=2)
+        ax1.set_title("Promedio")
+        ax1.set_xlabel("Índice (aplanado)")
+        ax1.set_ylabel("Amplitud media (µV)")
+        ax1.grid(True, alpha=0.3)
+
+        # Stem desviación estándar
+        markerline2, stemlines2, baseline2 = ax2.stem(
+            x_std[:500], std_flat[:500],
+            linefmt="darkorange", markerfmt="C1o", basefmt="k-"
+        )
+        plt.setp(stemlines2, linewidth=0.5)
+        plt.setp(markerline2, markersize=2)
+        ax2.set_title("Desviación estándar")
+        ax2.set_xlabel("Índice (aplanado)")
+        ax2.set_ylabel("Desviación estándar (µV)")
+        ax2.grid(True, alpha=0.3)
+
+        plt.tight_layout()
+        plt.show()
+        self._guardar_figura(fig, f"{self.nombre}_estadisticas_eje{eje}")
