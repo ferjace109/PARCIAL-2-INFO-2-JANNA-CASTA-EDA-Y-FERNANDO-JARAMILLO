@@ -55,4 +55,31 @@ def pedir_ruta(extensiones: list) -> str:
 
 repositorio = Repositorio()
 
+#SUBMENUS
+#___ MENU SIATA CSV ___
+def submenu_csv(obj: SiataCSV):
+    while True:
+        encabezado(f"SIATA CSV  ›  {obj.nombre}")
+        print("  1. Mostrar información básica (info + describe)")
+        print("  2. Graficar columna (plot / boxplot / histograma)")
+        print("  3. Operaciones (apply, map, suma/resta de columnas)")
+        print("  4. Gráfico de remuestreo (días / meses / trimestres)")
+        print("  0. Volver al menú principal")
+
+        opcion = validar_entero("\n  Opción: ", 0, 4)
+
+        if opcion == 1:
+            obj.mostrar_info()
+            pausa()
+        elif opcion == 2:
+            obj.graficar_columna()
+            pausa()
+        elif opcion == 3:
+            obj.operaciones()
+            pausa()
+        elif opcion == 4:
+            obj.graficar_remuestreo()
+            pausa()
+        elif opcion == 0:
+            break
    
