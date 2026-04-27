@@ -210,6 +210,7 @@ class SiataCSV:
 
         print(f"\n{fragmento.to_string()}")
         print(f"  {'─'*56}\n")
+
 # Operaciones 
 
     def _op_apply(self): #apply: z-score de una columna elegida por el usuario.
@@ -311,3 +312,15 @@ class SiataCSV:
         plt.tight_layout()
         plt.show()
         self._guardar_figura(fig, f"{self.nombre}_{col}_remuestreo")
+#  Guardar figura
+    def _guardar_figura(self, fig: plt.Figure, nombre_base: str): #Guarda la figura como PNG en la carpeta de gráficos.
+        ruta_salida = os.path.join(self.carpeta_g, f"{nombre_base}.png")
+        fig.savefig(ruta_salida, dpi=150, bbox_inches="tight")
+        print(f"  💾  Gráfico guardado → {ruta_salida}")
+
+    def __str__(self):
+        return (f"SiataCSV | archivo: {self.nombre} | "
+                f"registros: {len(self.df)} | columnas: {list(self.df.columns)}")
+
+    def __repr__(self):
+        return f"SiataCSV('{self.ruta}')"
