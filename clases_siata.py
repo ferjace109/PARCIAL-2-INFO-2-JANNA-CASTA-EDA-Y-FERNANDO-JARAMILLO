@@ -210,3 +210,104 @@ class SiataCSV:
 
         print(f"\n{fragmento.to_string()}")
         print(f"  {'─'*56}\n")
+# Operaciones 
+
+    def _op_apply(self): #apply: z-score de una columna elegida por el usuario.
+        print("\n  ℹ  apply ejecuta una función fila por fila sobre una Serie.")
+        print("     Aquí calculamos el Z-score: cuántas desviaciones estándar")
+        print("     se aleja cada valor de la media de su columna.\n")
+        col = self._elegir_columna("  Columna para apply (z-score): ")
+        serie = self.df[col].dropna()
+        zscore = serie.apply(lambda x: (x - serie.mean()) / serie.std())
+        self._previsualizar(zscore, f"Z-score de '{col}'")
+
+    def _op_map(self): #map: categorización de niveles en una columna.
+        print("\n  ℹ  map sustituye cada valor de una Serie aplicando una")
+        print("     función o un diccionario de reemplazo elemento a elemento.")
+        print("     Aquí etiquetamos cada valor como 'Bajo', 'Medio' o 'Alto'")
+        print("     según los terciles de la columna.\n")
+        col = self._elegir_columna("  Columna para map (categorizar niveles): ")
+        vals = self.df[col].dropna()
+        q33, q66 = vals.quantile(0.33), vals.quantile(0.66)
+        categorias = vals.map(
+            lambda x: "Alto" if x > q66 else ("Medio" if x > q33 else "Bajo")
+        )
+        self._previsualizar(categorias, f"Categorías de '{col}'")
+        print(f"  Distribución de categorías:\n{categorias.value_counts().to_string()}\n")
+
+    def _op_aritmetica(self): #suma o resta de dos columnas elegidas por el usuario.
+        print("\n  Seleccione la primera columna:")
+        col1 = self._elegir_columna("  Primera columna: ")
+        print("  Seleccione la segunda columna:")
+        col2 = self._elegir_columna("  Segunda columna: ")
+        op = validar_opcion("  Operación [suma / resta]: ", ["suma", "resta"])
+
+        if op == "suma":
+            resultado = self.df[col1].add(self.df[col2])
+            etiqueta = f"{col1} + {col2}"
+        else:
+            resultado = self.df[col1].sub(self.df[col2])
+            etiqueta = f"{col1} - {col2}"
+
+        self._previsualizar(resultado.dropna(), f"Resultado de '{etiqueta}'")
+
+    def operaciones(self):
+        #
+        #Submenú que permite elegir cuál de las tres operaciones ejecutar:
+        #  1. apply  -> z-score de una columna
+        #  2. map    -> categorización por terciles
+        #  3. suma/resta de dos columnas
+        #En cada caso el usuario elige cómo previsualizar el resultado.
+        
+        while True:
+            print("\n─── Operaciones sobre el CSV ─────────────────────────────")
+            print("  1. apply      – z-score de una columna")
+            print("  2. map        – categorizar valores en Bajo / Medio / Alto")
+            print("  3. suma/resta – resultado de operar dos columnas")
+            print("  0. Volver")
+
+            opcion = validar_entero("\n  Operación: ", 0, 3)
+
+            if opcion == 1:
+                self._op_apply()
+            elif opcion == 2:
+                self._op_map()
+            elif opcion == 3:
+                self._op_aritmetica()
+            elif opcion == 0:
+                break
+
+            print("─"*60)
+
+    #  Remuestreo 
+    def graficar_remuestreo(self): #muestra los datos a días, meses y trimestres y grafica en 3 subplots
+       
+        col = self._elegir_columna("  Columna para remuestrear y graficar: ")
+        unidad = self.COLUMNAS_CALIDAD.get(col, col)
+        serie = self.df[col].dropna()
+
+        diario     = serie.resample("D").mean()
+        mensual    = serie.resample("ME").mean()
+        trimestral = serie.resample("QE").mean()
+
+        fig, axes = plt.subplots(3, 1, figsize=(14, 10))
+        fig.suptitle(f"Remuestreo de '{col}' – {self.nombre}",
+                     fontsize=14, fontweight="bold")
+
+        for ax, datos, titulo, color in zip(
+            axes,
+            [diario, mensual, trimestral],
+            ["Promedio Diario", "Promedio Mensual", "Promedio Trimestral"],
+            ["steelblue", "darkorange", "seagreen"]
+        ):
+            ax.plot(datos.index, datos.values, marker="o", markersize=3,
+                    color=color, linewidth=1.2)
+            ax.set_title(titulo, fontsize=11)
+            ax.set_xlabel("Fecha")
+            ax.set_ylabel(unidad)
+            ax.grid(True, alpha=0.35)
+            ax.tick_params(axis="x", rotation=30)
+
+        plt.tight_layout()
+        plt.show()
+        self._guardar_figura(fig, f"{self.nombre}_{col}_remuestreo")
