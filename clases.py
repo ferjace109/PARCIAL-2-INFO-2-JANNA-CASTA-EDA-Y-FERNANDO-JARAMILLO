@@ -145,8 +145,9 @@ class SiataCSV:
 
         # Boxplot
         axes[1].boxplot(serie.values, patch_artist=True,
-                        boxprops=dict(facecolor="lightcyan", color="steelblue"),
-                        medianprops=dict(color="red", linewidth=2))
+                showfliers=False,
+                boxprops=dict(facecolor="lightcyan", color="steelblue"),
+                medianprops=dict(color="red", linewidth=2))
         axes[1].set_title("Boxplot")
         axes[1].set_ylabel(unidad)
         axes[1].set_xticks([1])
