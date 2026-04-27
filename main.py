@@ -82,4 +82,27 @@ def submenu_csv(obj: SiataCSV):
             pausa()
         elif opcion == 0:
             break
-   
+#___ MENU EEG ___
+def submenu_eeg(obj: ArchivoEEG):
+    while True:
+        encabezado(f"EEG MAT  ›  {obj.nombre}  ({obj.tipo})")
+        print("  1. Mostrar llaves del archivo (.whosmat)")
+        print("  2. Sumar 3 canales en un rango → graficar (señal 2D)")
+        print("  3. Promedio y desviación estándar por eje (señal 3D, stem)")
+        print("  0. Volver al menú principal")
+
+        opcion = validar_entero("\n  Opción: ", 0, 3)
+
+        if opcion == 1:
+            obj.mostrar_llaves()
+            pausa()
+        elif opcion == 2:
+            obj.sumar_canales()
+            pausa()
+        elif opcion == 3:
+            obj.estadisticas_3d()
+            pausa()
+        elif opcion == 0:
+            break
+
+#__MENU REPOSITORIO___
