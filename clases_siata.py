@@ -131,3 +131,40 @@ class SiataCSV:
             except ValueError:
                 pass
             print("  ⚠  Columna inválida, intente de nuevo.")
+
+ #  Gráfios
+
+    def graficar_columna(self):#Muestra plot, boxplot e histograma de una columna elegida por el usuario.
+                                                
+        columna = self._elegir_columna("  Columna para graficar: ")
+        serie = self.df[columna].dropna()
+        unidad = self.COLUMNAS_CALIDAD.get(columna, columna)
+
+        fig, axes = plt.subplots(1, 3, figsize=(16, 4))
+        fig.suptitle(f"Análisis de '{columna}' – {self.nombre}", fontsize=14, fontweight="bold")
+
+        # Plot temporal
+        axes[0].plot(serie.index, serie.values, color="steelblue", linewidth=0.8)
+        axes[0].set_title("Serie temporal")
+        axes[0].set_xlabel("Fecha / Hora")
+        axes[0].set_ylabel(unidad)
+        axes[0].tick_params(axis="x", rotation=30)
+
+        # Boxplot
+        axes[1].boxplot(serie.values, patch_artist=True,
+                        boxprops=dict(facecolor="lightcyan", color="steelblue"),
+                        medianprops=dict(color="red", linewidth=2))
+        axes[1].set_title("Boxplot")
+        axes[1].set_ylabel(unidad)
+        axes[1].set_xticks([1])
+        axes[1].set_xticklabels([columna])
+
+        # Histograma
+        axes[2].hist(serie.values, bins=30, color="steelblue", edgecolor="white", alpha=0.85)
+        axes[2].set_title("Histograma")
+        axes[2].set_xlabel(unidad)
+        axes[2].set_ylabel("Frecuencia")
+
+        plt.tight_layout()
+        plt.show()
+        self._guardar_figura(fig, f"{self.nombre}_{columna}_3graficos")
