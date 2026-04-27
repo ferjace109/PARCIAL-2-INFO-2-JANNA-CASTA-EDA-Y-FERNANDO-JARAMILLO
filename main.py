@@ -106,3 +106,57 @@ def submenu_eeg(obj: ArchivoEEG):
             break
 
 #__MENU REPOSITORIO___
+def submenu_repositorio(): #Submenú de gestión del repositorio de objetos
+    while True:
+        encabezado("REPOSITORIO DE OBJETOS")
+        print(f"  Objetos almacenados: {len(repositorio)}")
+        print()
+        print("  1. Listar todos los objetos")
+        print("  2. Buscar objeto por nombre")
+        print("  3. Buscar objetos por tipo (csv / eeg / control / parkinson)")
+        print("  4. Abrir objeto almacenado")
+        print("  5. Eliminar objeto del repositorio")
+        print("  0. Volver al menú principal")
+
+        opcion = validar_entero("\n  Opción: ", 0, 5)
+
+        if opcion == 1:
+            repositorio.listar()
+            pausa()
+
+        elif opcion == 2:
+            nombre = input("  Nombre a buscar: ").strip()
+            resultado = repositorio.buscar(nombre)
+            if resultado and not isinstance(resultado, dict):
+                abrir = input("  ¿Desea abrir este objeto? [s/n]: ").strip().lower()
+                if abrir == "s":
+                    if isinstance(resultado, SiataCSV):
+                        submenu_csv(resultado)
+                    elif isinstance(resultado, ArchivoEEG):
+                        submenu_eeg(resultado)
+            pausa()
+
+        elif opcion == 3:
+            tipo = input("  Tipo a buscar (csv / eeg / control / parkinson): ").strip()
+            repositorio.buscar_por_tipo(tipo)
+            pausa()
+
+        elif opcion == 4:
+            repositorio.listar()
+            nombre = input("  Nombre del objeto a abrir: ").strip()
+            obj = repositorio.buscar(nombre)
+            if obj and not isinstance(obj, dict):
+                if isinstance(obj, SiataCSV):
+                    submenu_csv(obj)
+                elif isinstance(obj, ArchivoEEG):
+                    submenu_eeg(obj)
+
+        elif opcion == 5:
+            repositorio.listar()
+            nombre = input("  Nombre del objeto a eliminar: ").strip()
+            repositorio.eliminar(nombre)
+            pausa()
+
+        elif opcion == 0:
+            break
+
