@@ -135,3 +135,25 @@ class ArchivoEEG:
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 8))
         fig.suptitle(f"Suma de canales – {self.nombre} ({self.tipo})",
                      fontsize=13, fontweight="bold")
+        
+        # Subplot 1: canales individuales
+        ax1.plot(tiempo, seg1, label=n1, linewidth=0.9)
+        ax1.plot(tiempo, seg2, label=n2, linewidth=0.9)
+        ax1.plot(tiempo, seg3, label=n3, linewidth=0.9)
+        ax1.set_title("Canales individuales")
+        ax1.set_xlabel("Tiempo (s)")
+        ax1.set_ylabel("Amplitud (µV)")
+        ax1.legend(loc="upper right")
+        ax1.grid(True, alpha=0.3)
+
+        # Subplot 2: suma
+        ax2.plot(tiempo, suma, color="crimson", linewidth=1.0, label=f"{n1}+{n2}+{n3}")
+        ax2.set_title(f"Suma de canales: {n1} + {n2} + {n3}")
+        ax2.set_xlabel("Tiempo (s)")
+        ax2.set_ylabel("Amplitud (µV)")
+        ax2.legend(loc="upper right")
+        ax2.grid(True, alpha=0.3)
+
+        plt.tight_layout()
+        plt.show()
+        self._guardar_figura(fig, f"{self.nombre}_suma_canales")
