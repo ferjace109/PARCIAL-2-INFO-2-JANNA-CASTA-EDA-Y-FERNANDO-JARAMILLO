@@ -271,3 +271,59 @@ class Repositorio:
             return coincidencias
         print(f"  ⚠  No se encontró ningún objeto con nombre '{nombre}'.")
         return None
+    
+    # Buscar por tipo
+    def buscar_por_tipo(self, tipo: str):
+    #Filtra objetos portipo: 'csv', 'eeg', 'control', 'parkinson'
+    
+        tipo_lower = tipo.lower()
+        resultados = {}
+        for k, v in self._datos.items():
+            if tipo_lower in ("csv", "siata") and isinstance(v, SiataCSV): #de la otra branch pero que uniremos al final
+                resultados[k] = v
+            elif tipo_lower == "eeg" and isinstance(v, ArchivoEEG):
+                resultados[k] = v
+            elif tipo_lower == "control" and isinstance(v, ArchivoEEG) and v.tipo == "Control":
+                resultados[k] = v
+            elif tipo_lower == "parkinson" and isinstance(v, ArchivoEEG) and v.tipo == "Parkinson":
+                resultados[k] = v
+
+        if resultados:
+            print(f"  🔍  Objetos de tipo '{tipo}':")
+            for k, v in resultados.items():
+                print(f"    – {k}: {v}")
+        else:
+            print(f"  ⚠  No hay objetos de tipo '{tipo}' en el repositorio.")
+        return resultados
+
+    #Listar todos 
+
+    def listar(self):
+        if not self._datos:
+            print("  El repositorio está vacío.")
+            return
+        print(f"\n  📦  Repositorio ({len(self._datos)} objeto(s)):")
+        print("  " + "-"*60)
+        for i, (k, v) in enumerate(self._datos.items(), 1):
+            tipo = type(v).__name__
+            print(f"  {i:3}. [{tipo}]  {v}")
+        print("  " + "-"*60)
+
+    # Eliminar 
+    def eliminar(self, nombre: str) -> bool:
+        """Elimina un objeto del repositorio por nombre."""
+        if nombre in self._datos:
+            del self._datos[nombre]
+            print(f"  🗑  Objeto '{nombre}' eliminado del repositorio.")
+            return True
+        print(f"  ⚠  No se encontró '{nombre}' en el repositorio.")
+        return False
+
+    def __len__(self):
+        return len(self._datos)
+
+    def __contains__(self, nombre: str):
+        return nombre in self._datos
+
+    def __str__(self):
+        return f"Repositorio con {len(self._datos)} objeto(s): {list(self._datos.keys())}"
