@@ -43,3 +43,16 @@ class ArchivoEEG:
             self.tipo = "Parkinson"
         else:
             self.tipo = "Control"
+        
+        # Cargar datos
+        mat = sio.loadmat(ruta)
+        clave = [k for k in mat.keys() if not k.startswith("_")][0]
+        self.mat_3d = mat[clave]                     # (canales, muestras, épocas)
+        self.n_canales, self.n_muestras, self.n_epocas = self.mat_3d.shape
+
+        # Convertir a 2D: (canales, muestras*épocas)
+        self.mat_2d = self.mat_3d.reshape(self.n_canales, -1)
+
+        print(f"  ✔  Archivo '{self.nombre}' cargado correctamente.")
+        print(f"     Tipo: {self.tipo} | Canales: {self.n_canales} | "
+              f"Muestras/época: {self.n_muestras} | Épocas: {self.n_epocas}")
